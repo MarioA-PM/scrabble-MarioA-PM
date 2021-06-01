@@ -1,16 +1,19 @@
 package cl.uchile.dcc.scrabble.tipos.numeros;
 
-import cl.uchile.dcc.scrabble.tipos.TString;
-
+import cl.uchile.dcc.scrabble.tipos.*;
+import cl.uchile.dcc.scrabble.tipos.Operations.*;
+import cl.uchile.dcc.scrabble.tipos.transformations.ITransToBinary;
+import cl.uchile.dcc.scrabble.tipos.transformations.ITransToInt;
 import java.util.Objects;
 
 /**
- * Class that represents an integer number (containing an int type)
+ * Class that represents an integer number (containing a primitive int type).
  */
 
-public class TInt {
+public class TInt extends AbstractNumber
+        implements INumberOp, IOpBin, ITransToInt, ITransToBinary{
 
-    private int i;
+    private final int i;
 
     public TInt(int i){
         this.i = i;
@@ -39,18 +42,12 @@ public class TInt {
         return Objects.hash(TInt.class, this.getValue());
     }
 
-    /**
-     * Converts the TInt object to TString object (returns
-     * a new TString).
-     */
+    @Override
     public TString toTString(){
         return new TString(this.toString());
     }
 
-    /**
-     * Converts the TInt object to TFloat object (returns
-     * a new TString).
-     */
+    @Override
     public TFloat toTFloat(){
         double x = this.getValue();
         return new TFloat(x);
@@ -59,7 +56,7 @@ public class TInt {
     /**
      * Returns the binary representation of the number as a String.
      */
-    public String positiveIntToBinary(int k){
+    private String positiveIntToBinary(int k){
         String fourBytes = "00000000000000000000000000000000";
         StringBuilder bin = new StringBuilder(fourBytes);
         if (k == 0){
@@ -70,7 +67,7 @@ public class TInt {
         for (int j = 0; j < length; j++){
             String digit = String.valueOf(rest%2);
             bin.replace(32 - j - 1, 32 - j, digit);
-            rest = (int) rest/2;
+            rest = rest/2;
         }
         return bin.toString();
     }
@@ -78,13 +75,11 @@ public class TInt {
     /**
      * Returns the two's complement of a binary number.
      */
-    public String twosComplement(String b){
+    private String twosComplement(String b){
         // 1's complement
-        StringBuilder bin = new StringBuilder(b);
-        for (int j = 0; j < 32; j++){
-            bin.replace(j, j + 1, String.valueOf((((int) bin.charAt(j))+1)%2));
-        }
+        TBinary a = (new TBinary(b)).neg();
 
+        StringBuilder bin = new StringBuilder(a.getValue());
         //plus 1
         int j = 31;
         while (j >= 0){
@@ -97,13 +92,10 @@ public class TInt {
             }
             j -= 1;
         }
-        return "Invalid Value";
+        return null;
     }
 
-    /**
-     * Returns a new TBinary object with the binary
-     * representation of que given number.
-     */
+    @Override
     public TBinary toTBinary(){
         int abs = Math.abs(this.getValue());
         String b = positiveIntToBinary(abs);
@@ -113,5 +105,118 @@ public class TInt {
         return new TBinary(b);
     }
 
+    @Override
+    public TString sumaString(TString n) {
+        return new TString(n.toString().concat(this.toString()));
+    }
 
+    @Override
+    public INumber suma(IOpNumber n) {
+        return n.sumaInt(this);
+    }
+
+    @Override
+    public INumber resta(IOpNumber n) {
+        return n.restaInt(this);
+    }
+
+    @Override
+    public INumber mult(IOpNumber n) {
+        return n.multInt(this);
+    }
+
+    @Override
+    public INumber div(IOpNumber n) {
+        return n.divInt(this);
+    }
+
+    @Override
+    public INumber sumaInt(TInt n) {
+        return new TInt(n.getValue() + this.getValue());
+    }
+
+    @Override
+    public INumber sumaFloat(TFloat n) {
+        return new TFloat(n.getValue() + this.getValue());
+    }
+
+    @Override
+    public INumber sumaBin(TBinary n) {
+        return (new TInt(n.toTInt().getValue() + this.getValue())).toTBinary();
+    }
+
+    @Override
+    public INumber restaInt(TInt n) {
+        return new TInt(n.getValue() - this.getValue());
+    }
+
+    @Override
+    public INumber restaFloat(TFloat n) {
+        return new TFloat(n.getValue() - this.getValue());
+    }
+
+    @Override
+    public INumber restaBin(TBinary n) {
+        return (new TInt(n.toTInt().getValue() - this.getValue())).toTBinary();
+    }
+
+    @Override
+    public INumber multInt(TInt n) {
+        return new TInt(n.getValue() * this.getValue());
+    }
+
+    @Override
+    public INumber multFloat(TFloat n) {
+        return new TFloat(n.getValue() * this.getValue());
+    }
+
+    @Override
+    public INumber multBin(TBinary n) {
+        return (new TInt(n.toTInt().getValue() * this.getValue())).toTBinary();
+    }
+
+    @Override
+    public INumber divInt(TInt n) {
+        return new TInt(n.getValue() / this.getValue());
+    }
+
+    @Override
+    public INumber divFloat(TFloat n) {
+        return new TFloat(n.getValue() / this.getValue());
+    }
+
+    @Override
+    public INumber divBin(TBinary n) {
+        return (new TInt(n.toTInt().getValue() / this.getValue())).toTBinary();
+    }
+
+    @Override
+    public INumber suma(IOpBin n) {
+        return n.sumaInt(this);
+    }
+
+    @Override
+    public INumber resta(IOpBin n) {
+        return n.restaInt(this);
+    }
+
+    @Override
+    public INumber mult(IOpBin n) {
+        return n.multInt(this);
+    }
+
+    @Override
+    public INumber div(IOpBin n) {
+        return n.divInt(this);
+    }
+
+    @Override
+    public INegation neg() {
+        return new TInt(-this.getValue());
+    }
+
+    @Override
+    public TInt toTInt() {
+        return new TInt(this.getValue());
+    }
 }

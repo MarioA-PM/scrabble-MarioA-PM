@@ -1,13 +1,15 @@
 package cl.uchile.dcc.scrabble.tipos;
 
+import cl.uchile.dcc.scrabble.tipos.Operations.IStringSum;
+import cl.uchile.dcc.scrabble.tipos.Operations.ISumString;
 import java.util.Objects;
 
 /**
  * Class that represents the String type.
  */
-public class TString {
+public class TString extends AbstractType implements IStringSum{
 
-    private String s;
+    private final String s;
 
     public TString(String str){
         s = str;
@@ -32,7 +34,22 @@ public class TString {
     }
 
     @Override
+    public TString toTString() {
+        return new TString(this.getValue());
+    }
+
+    @Override
     public String toString(){
         return this.getValue();
+    }
+
+    @Override
+    public TString sumaString(TString n) {
+        return new TString(n.toString().concat(this.toString()));
+    }
+
+    @Override
+    public TString suma(ISumString n) {
+        return n.sumaString(this);
     }
 }
