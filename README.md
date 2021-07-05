@@ -15,31 +15,57 @@ _University of Chile_.
 
 ## Instrucciones
 
-Para comprobar el funcionamiento del programa se deben ejecutar los test de JUnit ubicados en la carpeta test,
-los cuales están divididos en las 5 clases principales del proyecto: TString, TBool, TInt, TFloat y TBinary.
+Para comprobar el funcionamiento del programa se deben ejecutar los test de JUnit ubicados
+en la carpeta test, los cuales están divididos en tests para las 5 clases principales del 
+proyecto: `TString`, `TBool`, `TInt`, `TFloat` y `TBinary`. Para corroborar  la implementación 
+de los árboles de sintaxis abstracta (AST) se creó una clase aparte con tests independientes.
 
 ## Funcionamiento
 
-Todas las funcionalidades requeridas, ya sea transformaciones u operaciones, son implementadas a través de
-interfaces para dejar de forma más explícita los métodos que cada tipo debe implementar, además del orden en
-que estos se pueden realizar (en el caso de las operaciones entre dos tipos). 
+Todas las operaciones (suma, resta, conjunción, etc) y transformaciones (a binario, a string,
+etc) son comunes a todos los tipos, es decir, a cada tipo se le puede aplicar cualquier 
+transformación y se puede operar con cualquier tipo. Estas operaciones fueron implementadas 
+mediante Double Dispatch.
 
-Para implementar las distintas operaciones entre dos tipos se utilizó el método de double dispatch, 
-salvo en el caso de la suma de un string, ya que solo se permite sumar un string a la derecha con 
-cualquier otro tipo, pero no al revés. 
+En el caso de las operaciones y transformaciones que no están permitidas por los requerimientos 
+del proyecto como binario + float (`aBinary.suma(aFloat)`) o convertir un float a binario
+(`aFloat.toTBinary()`), se retorna un objeto que representa el valor nulo. Este último objeto 
+implementa todas las operaciones y transformaciones pero retornando siempre el mismo valor. 
+La clase en cuestión es NullObject y, como su nombre sugiere, sigue el Null Object Pattern, 
+que a su vez está implementado como un Singleton. 
 
-En el caso de las operaciones entre números (suma, resta, multiplicación y división) se utilizó de igual
-manera double dispatch pero implementando varias interfaces y un diseño un poco más enredado para poder
-restringir que un binario a la izquierda no se pueda operar con un float a la derecha. Debido a esto incluso
-se implementan interfaces vacías para poder restringir o permitir las operaciones entre distintos tipos.
+Para implementar los AST se utilizó el patrón Composite, que permite crear un árbol
+donde los nodos con dos hijos corresponden a una operación binaria y los nodos con
+solo un hijo a operaciones unarias (como la negación o las transformaciones). Los 
+nodos internos siempre son operaciones o transformaciones, y los nodos hoja corresponden 
+a los tipos creados de Scrabble. Las clases que representan nodos implementa la 
+interfaz ITree, la cual provee un único método que corresponde a evaluar el arból (`eval()`) 
+que representa dicho nodo (de manera recursiva) y retorna un tipo de Scrabble. El siguiente 
+es un ejemplo de la construcción de un árbol:
 
-**Importante:** Hay que tomar en cuenta que todas las operaciones están pensadas para ocuparse con su nombre
-general, por ejemplo, `objeto.suma(otroObjeto)` o `objeto.resta(otroObjeto)`, ya que al utilizar
-double dispatch se implementan métodos específicos como `objeto.sumaFloat(TFloat)`, lo cual 
-permitiría operar un binario a la izquierda con un float a la derecha de la forma
-`binario.sumaFloat(float)`. Estos métodos deben ser implementados debido a la naturaleza del
-funcionamiento de double dispatch pero no están pensados para usarse. 
+```java
+IType tree =
+  new Add(
+    new TFloat(6.9),
+    new Or(
+      new TBinary("1000"),
+      new ToBinary(
+        new Sub(
+          new TInt(25),
+          new TBinary("0101")
+        )
+      )
+    )
+  );
 
-Esto último también aplica para las operaciones lógicas, que deben ser llamadas como, por ejemplo, 
-`booleano.or(binario)` y no como `booleano.orBin(binario)`.
+assertEquals(new TFloat(34.9), tree.eval()); //true
+```
+Para el almacenamiento de variables de forma eficiente, se utilizó el patrón de diseño Flyweight, 
+teniendo 5 clases que se encargan de crear y almacenar las variables para cada tipo de Scrabble. 
+Esta fábricas también siguen el patrón Singleton, es decir, solo puede haber una instancia para 
+cada fábrica de cada tipo. De esta forma, los objetos deben ser creados de la siguiente forma:
 
+```java
+FlyweightTIntFactory intFactory = FlyweightTIntFactory.getInstance();
+TInt n = intFactory.getTInt(5);
+```
