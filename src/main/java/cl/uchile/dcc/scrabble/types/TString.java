@@ -10,9 +10,7 @@ import java.util.Objects;
 public class TString extends AbstractType{
 
     private final String s;
-
     private final FlyweightTStringFactory stringFac = FlyweightTStringFactory.getInstance();
-
 
     public TString(String str){
         s = str;

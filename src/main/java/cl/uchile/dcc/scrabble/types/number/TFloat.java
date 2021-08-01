@@ -9,11 +9,12 @@ import java.util.Objects;
  * Class that represents a float number (containing a primitive double type).
  */
 
-public class TFloat extends AbstractType {
+public class TFloat extends AbstractType{
 
     private final double x;
 
     private final FlyweightTFloatFactory floatFac = FlyweightTFloatFactory.getInstance();
+    private final FlyweightTBoolFactory boolFac = FlyweightTBoolFactory.getInstance();
 
     public TFloat(double x){
         this.x = x;
@@ -113,6 +114,29 @@ public class TFloat extends AbstractType {
     @Override
     public TFloat divAInt(TInt n) {
         return floatFac.getTFloat(n.getValue() / this.getValue());
+    }
+
+    @Override
+    public TBool compare(IType t, int n){
+        return t.compareTFloat(this, -n);
+    }
+
+    @Override
+    public TBool compareTInt(TInt t, int n) {
+        int cp = Double.compare(this.getValue(), t.getValue());
+        return boolFac.getTBool(cp*n > 0 | cp == n);
+    }
+
+    @Override
+    public TBool compareTBin(TBinary t, int n) {
+        int cp = Double.compare(this.getValue(), t.toTInt().getValue());
+        return boolFac.getTBool(cp*n > 0 | cp == n);
+    }
+
+    @Override
+    public TBool compareTFloat(TFloat t, int n) {
+        int cp = Double.compare(this.getValue(), t.getValue());
+        return boolFac.getTBool(cp*n > 0 | cp == n);
     }
 }
 
