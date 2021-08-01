@@ -67,7 +67,7 @@ public class TBinaryTest {
             TInt dir = new TInt(expected[i]);
             TString actTString = num[i].toTString();
             TString exp = new TString(values[i]);
-            TFloat expObj = new TFloat((double) expected[i]);
+            TFloat expObj = new TFloat(expected[i]);
             TFloat actObj = num[i].toTFloat();
             assertEquals(expected[i], act.getValue(), "Binary and integer value don't match");
             assertEquals(dir, act, "Objects don't match");

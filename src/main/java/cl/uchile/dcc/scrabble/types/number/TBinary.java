@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * Class that represents a binary number.
  */
-public class TBinary extends AbstractType{
+public class TBinary extends AbstractType {
 
     private final String b;
 
@@ -17,6 +17,7 @@ public class TBinary extends AbstractType{
     private final FlyweightTIntFactory intFac = FlyweightTIntFactory.getInstance();
     private final FlyweightTFloatFactory floatFac = FlyweightTFloatFactory.getInstance();
     private final FlyweightTStringFactory stringFac = FlyweightTStringFactory.getInstance();
+    private final FlyweightTBoolFactory boolFac = FlyweightTBoolFactory.getInstance();
 
 
     public TBinary(String b) {
@@ -341,5 +342,28 @@ public class TBinary extends AbstractType{
     @Override
     public TBinary toTBinary() {
         return binFac.getTBinary(this.getValue());
+    }
+
+    @Override
+    public TBool compare(IType t, int n){
+        return t.compareTBin(this, -n);
+    }
+
+    @Override
+    public TBool compareTInt(TInt t, int n) {
+        int cp = Integer.compare(this.toInt(this.getValue()), t.getValue());
+        return boolFac.getTBool(cp*n > 0 | cp == n);
+    }
+
+    @Override
+    public TBool compareTBin(TBinary t, int n) {
+        int cp = Integer.compare(this.toInt(this.getValue()), t.toInt(t.getValue()));
+        return boolFac.getTBool(cp*n > 0 | cp == n);
+    }
+
+    @Override
+    public TBool compareTFloat(TFloat t, int n) {
+        int cp = Double.compare(this.toInt(this.getValue()), t.getValue());
+        return boolFac.getTBool(cp*n > 0 | cp == n);
     }
 }

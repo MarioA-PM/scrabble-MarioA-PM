@@ -51,5 +51,4 @@ public interface INumber{
      * Returns the division with the given TInt (returns a new object).
      */
     IType divAInt(TInt n);
-
 }

@@ -1,6 +1,7 @@
 package cl.uchile.dcc.scrabble.types;
 
 import cl.uchile.dcc.scrabble.Operations.IOpLogical;
+import cl.uchile.dcc.scrabble.flyweightFactory.FlyweightTBoolFactory;
 import cl.uchile.dcc.scrabble.flyweightFactory.FlyweightTStringFactory;
 import cl.uchile.dcc.scrabble.types.number.TBinary;
 import cl.uchile.dcc.scrabble.types.number.TFloat;
@@ -9,7 +10,7 @@ import cl.uchile.dcc.scrabble.types.number.TInt;
 /**
  * Represents the general types of the project (strings, booleans and numbers).
  */
-public abstract class AbstractType implements IType {
+public class AbstractType implements IType {
 
     private final FlyweightTStringFactory stringFac = FlyweightTStringFactory.getInstance();
 
@@ -81,6 +82,26 @@ public abstract class AbstractType implements IType {
     @Override
     public IType neg() {
         return NullObject.getUniqueInstance();
+    }
+
+    @Override
+    public TBool compare(IType t, int n) {
+        return FlyweightTBoolFactory.getInstance().getTBool(false);
+    }
+
+    @Override
+    public TBool compareTInt(TInt t, int n) {
+        return FlyweightTBoolFactory.getInstance().getTBool(false);
+    }
+
+    @Override
+    public TBool compareTBin(TBinary t, int n) {
+        return FlyweightTBoolFactory.getInstance().getTBool(false);
+    }
+
+    @Override
+    public TBool compareTFloat(TFloat t, int n) {
+        return FlyweightTBoolFactory.getInstance().getTBool(false);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package cl.uchile.dcc.scrabble.types.number;
 
-import cl.uchile.dcc.scrabble.flyweightFactory.FlyweightTBinaryFactory;
 import cl.uchile.dcc.scrabble.flyweightFactory.FlyweightTFloatFactory;
 import cl.uchile.dcc.scrabble.flyweightFactory.FlyweightTIntFactory;
 import cl.uchile.dcc.scrabble.types.TString;

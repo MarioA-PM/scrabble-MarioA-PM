@@ -47,7 +47,7 @@ public class TIntTest {
     void toTFloatTest(){
         int n = rng.nextInt();
         TInt res = new TInt(n);
-        TFloat expected = new TFloat((double) n);
+        TFloat expected = new TFloat(n);
         assertEquals(expected, res.toTFloat(), "Objects don't match. seed: " + seed);
     }
 

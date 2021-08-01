@@ -8,7 +8,6 @@ import java.util.Objects;
 /**
  * Class that represents an integer number (containing a primitive int type).
  */
-
 public class TInt extends AbstractType{
 
     private final int i;
@@ -16,6 +15,7 @@ public class TInt extends AbstractType{
     private final FlyweightTBinaryFactory binFac = FlyweightTBinaryFactory.getInstance();
     private final FlyweightTIntFactory intFac = FlyweightTIntFactory.getInstance();
     private final FlyweightTFloatFactory floatFac = FlyweightTFloatFactory.getInstance();
+    private final FlyweightTBoolFactory boolFac = FlyweightTBoolFactory.getInstance();
 
     public TInt(int i){
         this.i = i;
@@ -193,5 +193,28 @@ public class TInt extends AbstractType{
     @Override
     public TInt toTInt() {
         return intFac.getTInt(this.getValue());
+    }
+
+    @Override
+    public TBool compare(IType t, int n){
+        return t.compareTInt(this, -n);
+    }
+
+    @Override
+    public TBool compareTInt(TInt t, int n) {
+        int cp = Integer.compare(this.getValue(), t.getValue());
+        return boolFac.getTBool(cp*n > 0 | cp == n);
+    }
+
+    @Override
+    public TBool compareTBin(TBinary t, int n) {
+        int cp = Integer.compare(this.getValue(), t.toTInt().getValue());
+        return boolFac.getTBool(cp*n > 0 | cp == n);
+    }
+
+    @Override
+    public TBool compareTFloat(TFloat t, int n) {
+        int cp = Double.compare(this.getValue(), t.getValue());
+        return boolFac.getTBool(cp*n > 0 | cp == n);
     }
 }
